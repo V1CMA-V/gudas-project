@@ -1,8 +1,34 @@
 ---
-import Welcome from "@/components/Welcome.astro";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import Layout from "@/layouts/Layout.astro";
+import { PlusIcon } from "lucide-react";
 ---
 
 <Layout>
-  <Welcome />
+  <div class="flex flex-col items-center justify-center h-screen">
+    <Card className="max-w-sm">
+      <CardHeader>
+        <CardTitle>Project Overview</CardTitle>
+        <CardDescription>
+          Track progress and recent activity for your Astro app.
+        </CardDescription>
+        <CardAction>
+          <Button variant="outline" size="icon">
+            <PlusIcon className="size-4" />
+          </Button>
+        </CardAction>
+      </CardHeader>
+      <CardContent>
+        Your design system is ready. Start building your next component.
+      </CardContent>
+    </Card>
+  </div>
 </Layout>
