@@ -1,0 +1,31 @@
+{
+  "collectionName": "components_component_links",
+  "info": {
+    "displayName": "Link",
+    "icon": "bulletList"
+  },
+  "options": {},
+  "attributes": {
+    "href": {
+      "type": "string",
+      "default": "#",
+      "required": true
+    },
+    "label": {
+      "type": "string"
+    },
+    "isExternal": {
+      "type": "boolean",
+      "default": false
+    },
+    "variante": {
+      "type": "enumeration",
+      "default": "primario",
+      "enum": [
+        "primario",
+        "secundario"
+      ]
+    }
+  },
+  "config": {}
+}

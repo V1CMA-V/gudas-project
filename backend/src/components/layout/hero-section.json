@@ -1,0 +1,41 @@
+{
+  "collectionName": "components_layout_hero_sections",
+  "info": {
+    "displayName": "Hero Section",
+    "icon": "apps"
+  },
+  "options": {},
+  "attributes": {
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "required": true,
+      "allowedTypes": [
+        "images",
+        "videos"
+      ]
+    },
+    "link": {
+      "type": "component",
+      "component": "component.link",
+      "repeatable": true
+    },
+    "label": {
+      "type": "string",
+      "default": "Estudio de danza · Puebla, México"
+    },
+    "titleLinea1": {
+      "type": "string",
+      "default": "Mueve"
+    },
+    "titleAccent": {
+      "type": "string",
+      "default": "tu"
+    },
+    "titleLinea2": {
+      "type": "string",
+      "default": "Mundo"
+    }
+  },
+  "config": {}
+}

@@ -1,5 +1,5 @@
 ---
-import { Button } from "@/components/ui/button";
+import { ModeToggle } from "@/components/ModeToggle";
 import {
   Card,
   CardAction,
@@ -9,26 +9,29 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import Layout from "@/layouts/Layout.astro";
-import { PlusIcon } from "lucide-react";
+import { getHomePage } from "@/lib/strapi";
+import AgendaSection from "@/sections/AgendaSection.astro";
+import ClassesBrand from "@/sections/ClassesBrand.astro";
+import ContactSection from "@/sections/ContactSection.astro";
+import GallerySection from "@/sections/GallerySection.astro";
+import HeroSection from "@/sections/HeroSection.astro";
+import HistorySection from "@/sections/HistorySection.astro";
+import OurNumbersSection from "@/sections/OurNumbersSection.astro";
+import StyledDanceSection from "@/sections/StyledDanceSection.astro";
+import TestimonialsSection from "@/sections/TestimonialsSection.astro";
+const homePage = await getHomePage();
+
+const { title, description } = homePage;
 ---
 
 <Layout>
-  <div class="flex flex-col items-center justify-center h-screen">
-    <Card className="max-w-sm">
-      <CardHeader>
-        <CardTitle>Project Overview</CardTitle>
-        <CardDescription>
-          Track progress and recent activity for your Astro app.
-        </CardDescription>
-        <CardAction>
-          <Button variant="outline" size="icon">
-            <PlusIcon className="size-4" />
-          </Button>
-        </CardAction>
-      </CardHeader>
-      <CardContent>
-        Your design system is ready. Start building your next component.
-      </CardContent>
-    </Card>
-  </div>
+  <HeroSection />
+  <ClassesBrand />
+  <HistorySection />
+  <OurNumbersSection />
+  <StyledDanceSection />
+  <AgendaSection />
+  <GallerySection />
+  <TestimonialsSection />
+  <ContactSection />
 </Layout>
