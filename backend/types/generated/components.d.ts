@@ -17,6 +17,20 @@ export interface ComponentLink extends Struct.ComponentSchema {
   };
 }
 
+export interface ComponentLogistic extends Struct.ComponentSchema {
+  collectionName: 'components_component_logistics';
+  info: {
+    displayName: 'logistic';
+    icon: 'lightbulb';
+  };
+  attributes: {
+    capacity: Schema.Attribute.Integer;
+    duration: Schema.Attribute.Integer;
+    price: Schema.Attribute.Decimal;
+    schedule: Schema.Attribute.String;
+  };
+}
+
 export interface LayoutHeroSection extends Struct.ComponentSchema {
   collectionName: 'components_layout_hero_sections';
   info: {
@@ -40,6 +54,7 @@ declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
       'component.link': ComponentLink;
+      'component.logistic': ComponentLogistic;
       'layout.hero-section': LayoutHeroSection;
     }
   }

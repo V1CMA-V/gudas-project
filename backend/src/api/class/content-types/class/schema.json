@@ -1,0 +1,51 @@
+{
+  "kind": "collectionType",
+  "collectionName": "classes",
+  "info": {
+    "singularName": "class",
+    "pluralName": "classes",
+    "displayName": "Class"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "label": {
+      "type": "string"
+    },
+    "description": {
+      "type": "text"
+    },
+    "level": {
+      "type": "enumeration",
+      "enum": [
+        "Principiante",
+        "Intermedio",
+        "Avanzado"
+      ]
+    },
+    "ageRange": {
+      "type": "string"
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "isActive": {
+      "type": "boolean"
+    },
+    "isFeatured": {
+      "type": "boolean",
+      "default": false
+    },
+    "horarioYlogistica": {
+      "type": "component",
+      "component": "component.logistic",
+      "repeatable": false
+    }
+  }
+}

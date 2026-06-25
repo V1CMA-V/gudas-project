@@ -1,0 +1,23 @@
+{
+  "collectionName": "components_component_logistics",
+  "info": {
+    "displayName": "logistic",
+    "icon": "lightbulb"
+  },
+  "options": {},
+  "attributes": {
+    "schedule": {
+      "type": "string"
+    },
+    "duration": {
+      "type": "integer"
+    },
+    "capacity": {
+      "type": "integer"
+    },
+    "price": {
+      "type": "decimal"
+    }
+  },
+  "config": {}
+}

@@ -25,11 +25,21 @@ const QUERY_HOME_PAGE = {
   },
 };
 
+const QUERY_CLASSES_BRAND = {
+  fields: ["label"],
+};
+
 export async function getHomePage() {
   const query = qs.stringify(QUERY_HOME_PAGE);
   const response = await getStrapiData(`/api/home-page?${query}`);
   console.log(`${BASE_URL}/api/home-page?${query}`);
   return response.data;
+}
+
+export async function getClassesBrand() {
+  const query = qs.stringify(QUERY_CLASSES_BRAND);
+  const response = await getStrapiData(`/api/classes?${query}`);
+  return response?.data ?? [];
 }
 
 export async function getStrapiData(url: string) {

@@ -1,3 +1,50 @@
-<section>
-  <p>ClassesBrand.astro</p>
-</section>
+---
+import { getClassesBrand } from "@/lib/strapi";
+
+interface Brand {
+  label: string;
+}
+
+const classesBrand: Brand[] = await getClassesBrand();
+
+// Repeat the list so the marquee fills any viewport and loops seamlessly:
+// translateX(-50%) needs the first half to match the second half.
+const loop = Array.from({ length: 4 }).flatMap(() => classesBrand);
+---
+
+{
+  classesBrand.length > 0 && (
+    <div
+      class="marquee absolute inset-x-0 bottom-0 z-[2] overflow-hidden border-t border-[oklch(0.9_0.04_70_/_0.1)] py-[0.9rem]"
+      aria-hidden="true"
+    >
+      <div class="track flex w-max animate-marquee motion-reduce:animate-none">
+        {loop.map((item) => (
+          <span class="shrink-0 whitespace-nowrap px-[0.4rem] text-[clamp(1rem,1.8vw,1.4rem)] italic text-[oklch(0.8_0.02_70_/_0.5)] [font-family:Fraunces,serif]">
+            <i class="px-[0.5rem] not-italic text-ember">✶</i> {item.label}
+          </span>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+<style>
+  /* edge fade mask */
+  .marquee {
+    -webkit-mask-image: linear-gradient(
+      90deg,
+      transparent,
+      #000 8%,
+      #000 92%,
+      transparent
+    );
+    mask-image: linear-gradient(
+      90deg,
+      transparent,
+      #000 8%,
+      #000 92%,
+      transparent
+    );
+  }
+</style>

@@ -2,7 +2,6 @@
 import Layout from "@/layouts/Layout.astro";
 import { getHomePage } from "@/lib/strapi";
 import AgendaSection from "@/sections/AgendaSection.astro";
-import ClassesBrand from "@/sections/ClassesBrand.astro";
 import ContactSection from "@/sections/ContactSection.astro";
 import GallerySection from "@/sections/GallerySection.astro";
 import HeroSection from "@/sections/HeroSection.astro";
@@ -17,7 +16,6 @@ const seo: { title: string; description: string } = homePage;
 
 <Layout title={seo.title} description={seo.description}>
   <HeroSection data={heroSection} />
-  <ClassesBrand />
   <HistorySection />
   <OurNumbersSection />
   <StyledDanceSection />

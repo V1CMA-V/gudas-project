@@ -1,5 +1,6 @@
 ---
 import LinkButton from "@/components/LinkButton.astro";
+import ClassesBrand from "./ClassesBrand.astro";
 
 interface HeroLink {
   href: string;
@@ -31,10 +32,13 @@ const place = data.label?.split("·").pop()?.trim() ?? "México";
 ---
 
 <section
-  class="hero relative isolate min-h-[100svh] overflow-hidden text-paper"
+  class="hero relative isolate min-h-[100svh] overflow-hidden text-paper mb-24"
 >
   <!-- atmosphere -->
-  <div class="hero__glow absolute inset-0 z-[-1] blur-[10px]" aria-hidden="true">
+  <div
+    class="hero__glow absolute inset-0 z-[-1] blur-[10px]"
+    aria-hidden="true"
+  >
   </div>
   <div
     class="hero__grain pointer-events-none absolute inset-0 z-[1] opacity-50 mix-blend-soft-light"
@@ -57,8 +61,7 @@ const place = data.label?.split("·").pop()?.trim() ?? "México";
         class="hero__eyebrow mb-[clamp(1.4rem,3vw,2.2rem)] inline-flex items-center gap-[0.7rem] text-[0.72rem] uppercase tracking-[0.28em] text-[oklch(0.82_0.03_70_/_0.85)]"
         style="--d: 0.05s"
       >
-        <span
-          class="hero__dot h-[7px] w-[7px] rounded-full bg-ember-soft"
+        <span class="hero__dot h-[7px] w-[7px] rounded-full bg-ember-soft"
         ></span>
         {data.label}
       </p>
@@ -142,28 +145,7 @@ const place = data.label?.split("·").pop()?.trim() ?? "México";
     </div>
   </div>
 
-  <!-- kinetic baseline -->
-  <div
-    class="hero__marquee absolute inset-x-0 bottom-0 z-[2] overflow-hidden border-t border-[oklch(0.9_0.04_70_/_0.1)] py-[0.9rem]"
-    aria-hidden="true"
-  >
-    <div class="hero__track flex w-max">
-      {
-        Array.from({ length: 8 }).map(() => (
-          <span class="shrink-0 whitespace-nowrap px-[0.4rem] text-[clamp(1rem,1.8vw,1.4rem)] italic text-[oklch(0.8_0.02_70_/_0.5)] [font-family:Fraunces,serif]">
-            Movimiento <i class="px-[0.5rem] not-italic text-ember">✶</i>{" "}
-            Danza <i class="px-[0.5rem] not-italic text-ember">✶</i>{" "}
-            Escenario{" "}
-            <i class="px-[0.5rem] not-italic text-ember">✶</i> Pasión{" "}
-            <i class="px-[0.5rem] not-italic text-ember">✶</i>{" "}
-            Disciplina{" "}
-            <i class="px-[0.5rem] not-italic text-ember">✶</i> Arte{" "}
-            <i class="px-[0.5rem] not-italic text-ember">✶</i>
-          </span>
-        ))
-      }
-    </div>
-  </div>
+  <ClassesBrand />
 </section>
 
 <style>
@@ -234,27 +216,6 @@ const place = data.label?.split("·").pop()?.trim() ?? "México";
     );
   }
 
-  /* marquee — edge fade mask + scroll animation */
-  .hero__marquee {
-    -webkit-mask-image: linear-gradient(
-      90deg,
-      transparent,
-      #000 8%,
-      #000 92%,
-      transparent
-    );
-    mask-image: linear-gradient(
-      90deg,
-      transparent,
-      #000 8%,
-      #000 92%,
-      transparent
-    );
-  }
-  .hero__track {
-    animation: scroll 60s linear infinite;
-  }
-
   /* staggered entrance (drives --d set inline on each element) */
   .hero__eyebrow,
   .hero__sub,
@@ -292,11 +253,6 @@ const place = data.label?.split("·").pop()?.trim() ?? "México";
       transform: translateY(0) rotate(0deg) scale(1);
     }
   }
-  @keyframes scroll {
-    to {
-      transform: translateX(-50%);
-    }
-  }
   @keyframes breathe {
     0%,
     100% {
@@ -321,8 +277,7 @@ const place = data.label?.split("·").pop()?.trim() ?? "México";
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .hero *,
-    .hero__track {
+    .hero * {
       animation: none !important;
     }
   }
