@@ -35,6 +35,9 @@
     "titleLinea2": {
       "type": "string",
       "default": "Mundo"
+    },
+    "subHeading": {
+      "type": "string"
     }
   },
   "config": {}

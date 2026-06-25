@@ -1,9 +1,14 @@
-const BASE_URL = "http://localhost:1337";
 import qs from "qs";
 
+const BASE_URL = import.meta.env.STRAPI_API_URL;
+
+if (!BASE_URL) {
+  throw new Error("Falta STRAPI_API_URL en el archivo .env");
+}
+
 const QUERY_HOME_PAGE = {
-  pupulate: {
-    sectins: {
+  populate: {
+    sections: {
       on: {
         "layout.hero-section": {
           populate: {
@@ -11,7 +16,7 @@ const QUERY_HOME_PAGE = {
               fields: ["url", "alternativeText"],
             },
             link: {
-              populate: true,
+              populate: "*", // trae href, label, isExternal, variante
             },
           },
         },
@@ -23,6 +28,7 @@ const QUERY_HOME_PAGE = {
 export async function getHomePage() {
   const query = qs.stringify(QUERY_HOME_PAGE);
   const response = await getStrapiData(`/api/home-page?${query}`);
+  console.log(`${BASE_URL}/api/home-page?${query}`);
   return response.data;
 }
 

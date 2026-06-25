@@ -1,13 +1,4 @@
 ---
-import { ModeToggle } from "@/components/ModeToggle";
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import Layout from "@/layouts/Layout.astro";
 import { getHomePage } from "@/lib/strapi";
 import AgendaSection from "@/sections/AgendaSection.astro";
@@ -20,12 +11,13 @@ import OurNumbersSection from "@/sections/OurNumbersSection.astro";
 import StyledDanceSection from "@/sections/StyledDanceSection.astro";
 import TestimonialsSection from "@/sections/TestimonialsSection.astro";
 const homePage = await getHomePage();
-
-const { title, description } = homePage;
+const [heroSection] = homePage?.sections || [];
+console.log(heroSection);
 ---
 
 <Layout>
-  <HeroSection />
+  <HeroSection data={heroSection} />
+  <p></p>
   <ClassesBrand />
   <HistorySection />
   <OurNumbersSection />

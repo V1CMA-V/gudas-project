@@ -1,0 +1,67 @@
+---
+interface Props {
+  href: string;
+  label: string;
+  isExternal?: boolean;
+  variant?: "solid" | "ghost";
+  /** show the trailing arrow (defaults to true on the solid variant) */
+  arrow?: boolean;
+  class?: string;
+}
+
+const {
+  href,
+  label,
+  isExternal = false,
+  variant = "solid",
+  arrow,
+  class: className,
+} = Astro.props;
+
+const showArrow = arrow ?? variant === "solid";
+
+const base =
+  "group inline-flex items-center gap-[0.6rem] rounded-full px-[1.6rem] py-[0.95rem] text-[0.82rem] font-semibold uppercase tracking-[0.08em] no-underline transition duration-[350ms] [transition-timing-function:cubic-bezier(0.2,0.8,0.2,1)] hover:-translate-y-[3px]";
+
+const variants = {
+  solid: "btn--solid",
+  ghost:
+    "border border-[oklch(0.9_0.02_70_/_0.28)] bg-[oklch(0.9_0.02_70_/_0.04)] text-paper backdrop-blur-[6px] hover:border-ember-soft hover:text-ember-soft",
+};
+---
+
+<a
+  href={href}
+  class:list={[base, variants[variant], className]}
+  target={isExternal ? "_blank" : undefined}
+  rel={isExternal ? "noopener noreferrer" : undefined}
+>
+  {label}
+  {
+    showArrow && (
+      <svg
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+        class="h-[1.05em] w-[1.05em] fill-none stroke-current stroke-2 transition-transform duration-[350ms] [stroke-linecap:round] [stroke-linejoin:round] group-hover:translate-x-1"
+      >
+        <path d="M5 12h14M13 6l6 6-6 6" />
+      </svg>
+    )
+  }
+</a>
+
+<style>
+  /* solid CTA — gradient fill + layered glow shadow */
+  .btn--solid {
+    background: linear-gradient(
+      135deg,
+      var(--color-ember-soft),
+      var(--color-ember)
+    );
+    color: oklch(0.16 0.02 40);
+    box-shadow: 0 12px 34px -12px oklch(0.66 0.2 38 / 0.7);
+  }
+  .btn--solid:hover {
+    box-shadow: 0 20px 44px -14px oklch(0.66 0.2 38 / 0.85);
+  }
+</style>

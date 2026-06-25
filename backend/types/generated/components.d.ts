@@ -29,6 +29,7 @@ export interface LayoutHeroSection extends Struct.ComponentSchema {
     label: Schema.Attribute.String &
       Schema.Attribute.DefaultTo<'Estudio de danza \u00B7 Puebla, M\u00E9xico'>;
     link: Schema.Attribute.Component<'component.link', true>;
+    subHeading: Schema.Attribute.String;
     titleAccent: Schema.Attribute.String & Schema.Attribute.DefaultTo<'tu'>;
     titleLinea1: Schema.Attribute.String & Schema.Attribute.DefaultTo<'Mueve'>;
     titleLinea2: Schema.Attribute.String & Schema.Attribute.DefaultTo<'Mundo'>;
