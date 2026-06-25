@@ -2,58 +2,239 @@
 import { ModeToggle } from "@/components/ModeToggle";
 
 const navigation = [
-  {
-    label: "Home",
-    href: "/",
-  },
-  {
-    label: "About",
-    href: "/about",
-  },
-  {
-    label: "Classes",
-    href: "/classes",
-  },
-  {
-    label: "Gallery",
-    href: "/gallery",
-  },
-  {
-    label: "Contact",
-    href: "/contact",
-  },
+  { label: "Inicio", href: "/" },
+  { label: "Nosotros", href: "/about" },
+  { label: "Clases", href: "/classes" },
+  { label: "Galería", href: "/gallery" },
+  { label: "Contacto", href: "/contact" },
 ];
 
 const url = Astro.url.pathname;
-console.log(url);
-const isActive = (href: string) => {
-  return url.startsWith(href);
-};
+const isActive = (href: string) =>
+  href === "/" ? url === "/" : url.startsWith(href);
 ---
 
-<header class="bg-background text-foreground fixed top-0 left-0 right-0 z-50">
-  <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-    <p class="text-2xl font-bold">GUDAS Studio</p>
+<header
+  id="siteHeader"
+  class="header fixed inset-x-0 top-0 z-50 transition-[background,backdrop-filter,border-color] duration-500"
+>
+  <div
+    class="mx-auto flex max-w-[1280px] items-center justify-between px-[clamp(1.5rem,5vw,4.5rem)] py-4"
+  >
+    <!-- Logo -->
+    <a href="/" class="group flex items-baseline gap-1.5" aria-label="GUDAS Studio">
+      <span
+        class="text-[1.7rem] leading-none font-semibold tracking-tight [font-family:Fraunces,serif]"
+      >
+        GUDAS
+      </span>
+      <span
+        class="text-sm italic text-ember transition-transform duration-300 group-hover:translate-x-0.5 [font-family:Fraunces,serif]"
+      >
+        studio
+      </span>
+    </a>
 
-    <nav class="hidden md:flex gap-4">
+    <!-- Desktop nav -->
+    <nav class="hidden items-center gap-7 md:flex">
       {
-        navigation.map((item) => {
-          return (
-            <a
-              href={item.href}
-              class:list={[
-                "text-sm font-medium hover:scale-105 transition-all",
-                isActive(item.href)
-                  ? "text-primary font-medium"
-                  : "text-foreground font-normal",
-              ]}
-            >
-              {item.label}
-            </a>
-          );
-        })
+        navigation.map((item) => (
+          <a
+            href={item.href}
+            class:list={[
+              "nav-link text-[0.78rem] font-medium uppercase tracking-[0.16em] transition-colors",
+              isActive(item.href) && "text-ember",
+            ]}
+            data-active={isActive(item.href) ? "" : undefined}
+          >
+            {item.label}
+          </a>
+        ))
       }
     </nav>
-    <ModeToggle />
+
+    <!-- Actions -->
+    <div class="flex items-center gap-3">
+      <ModeToggle client:load />
+
+      <!-- Mobile toggle -->
+      <button
+        id="menuToggle"
+        type="button"
+        aria-label="Abrir menú"
+        aria-expanded="false"
+        class="burger relative h-9 w-9 md:hidden"
+      >
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile panel -->
+  <div
+    id="mobilePanel"
+    class="mobile-panel md:hidden"
+  >
+    <nav
+      class="mx-auto flex max-w-[1280px] flex-col gap-1 px-[clamp(1.5rem,5vw,4.5rem)] pb-6 pt-2"
+    >
+      {
+        navigation.map((item, i) => (
+          <a
+            href={item.href}
+            style={`--i:${i}`}
+            class:list={[
+              "mobile-link text-[1.5rem] font-semibold tracking-tight [font-family:Fraunces,serif]",
+              isActive(item.href) ? "text-ember" : "text-foreground",
+            ]}
+          >
+            {item.label}
+          </a>
+        ))
+      }
+    </nav>
   </div>
 </header>
+
+<style>
+  /* glass header — transparent over the hero, solid on scroll */
+  .header {
+    --hdr-fg: var(--color-paper);
+    color: var(--hdr-fg);
+    background: transparent;
+  }
+  /* top scrim so the light logo stays legible over imagery */
+  .header::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      oklch(0 0 0 / 0.45) 0%,
+      transparent 100%
+    );
+    opacity: 1;
+    transition: opacity 0.5s ease;
+    pointer-events: none;
+    z-index: -1;
+  }
+  .header.is-scrolled {
+    --hdr-fg: var(--foreground);
+    background: color-mix(in oklch, var(--background) 78%, transparent);
+    backdrop-filter: blur(14px) saturate(140%);
+    border-bottom: 1px solid var(--border);
+  }
+  .header.is-scrolled::before {
+    opacity: 0;
+  }
+
+  /* animated underline */
+  .nav-link {
+    position: relative;
+    color: var(--hdr-fg);
+  }
+  .nav-link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -6px;
+    height: 1.5px;
+    width: 100%;
+    background: var(--color-ember);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .nav-link:hover {
+    color: var(--color-ember-soft);
+  }
+  .nav-link:hover::after,
+  .nav-link[data-active]::after {
+    transform: scaleX(1);
+  }
+
+  /* hamburger */
+  .burger span {
+    position: absolute;
+    left: 50%;
+    height: 1.5px;
+    width: 20px;
+    background: var(--hdr-fg);
+    transform: translateX(-50%);
+    transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
+      opacity 0.2s ease;
+  }
+  .burger span:nth-child(1) {
+    top: 15px;
+  }
+  .burger span:nth-child(2) {
+    top: 22px;
+  }
+  .burger[aria-expanded="true"] span:nth-child(1) {
+    transform: translateX(-50%) translateY(3.5px) rotate(45deg);
+  }
+  .burger[aria-expanded="true"] span:nth-child(2) {
+    transform: translateX(-50%) translateY(-3.5px) rotate(-45deg);
+  }
+
+  /* mobile panel */
+  .mobile-panel {
+    overflow: hidden;
+    max-height: 0;
+    background: color-mix(in oklch, var(--background) 92%, transparent);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    transition: max-height 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .mobile-panel.open {
+    max-height: 70vh;
+  }
+  .mobile-link {
+    padding-block: 0.4rem;
+    opacity: 0;
+    transform: translateX(-12px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    transition-delay: calc(var(--i) * 0.05s);
+  }
+  .mobile-panel.open .mobile-link {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .header,
+    .header::before,
+    .nav-link::after,
+    .burger span,
+    .mobile-panel,
+    .mobile-link {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  const header = document.getElementById("siteHeader");
+  const toggle = document.getElementById("menuToggle");
+  const panel = document.getElementById("mobilePanel");
+
+  const onScroll = () => {
+    header?.classList.toggle("is-scrolled", window.scrollY > 24);
+  };
+  onScroll();
+  window.addEventListener("scroll", onScroll, { passive: true });
+
+  toggle?.addEventListener("click", () => {
+    const open = panel?.classList.toggle("open");
+    toggle.setAttribute("aria-expanded", String(open));
+    toggle.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
+  });
+
+  panel?.querySelectorAll("a").forEach((link) =>
+    link.addEventListener("click", () => {
+      panel.classList.remove("open");
+      toggle?.setAttribute("aria-expanded", "false");
+    })
+  );
+</script>

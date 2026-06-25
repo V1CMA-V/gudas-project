@@ -12,12 +12,11 @@ import StyledDanceSection from "@/sections/StyledDanceSection.astro";
 import TestimonialsSection from "@/sections/TestimonialsSection.astro";
 const homePage = await getHomePage();
 const [heroSection] = homePage?.sections || [];
-console.log(heroSection);
+const seo: { title: string; description: string } = homePage;
 ---
 
-<Layout>
+<Layout title={seo.title} description={seo.description}>
   <HeroSection data={heroSection} />
-  <p></p>
   <ClassesBrand />
   <HistorySection />
   <OurNumbersSection />
