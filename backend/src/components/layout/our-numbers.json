@@ -1,0 +1,16 @@
+{
+  "collectionName": "components_layout_our_numbers",
+  "info": {
+    "displayName": "Our numbers",
+    "icon": "hashtag"
+  },
+  "options": {},
+  "attributes": {
+    "numbers": {
+      "type": "component",
+      "component": "component.stat",
+      "repeatable": true
+    }
+  },
+  "config": {}
+}

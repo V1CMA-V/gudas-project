@@ -1,0 +1,25 @@
+{
+  "collectionName": "components_component_stats",
+  "info": {
+    "displayName": "stat",
+    "icon": "eye"
+  },
+  "options": {},
+  "attributes": {
+    "value": {
+      "type": "string"
+    },
+    "label": {
+      "type": "string"
+    },
+    "icon": {
+      "type": "enumeration",
+      "enum": [
+        "star",
+        "users",
+        "music"
+      ]
+    }
+  },
+  "config": {}
+}

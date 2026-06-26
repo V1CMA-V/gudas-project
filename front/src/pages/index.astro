@@ -6,18 +6,16 @@ import ContactSection from "@/sections/ContactSection.astro";
 import GallerySection from "@/sections/GallerySection.astro";
 import HeroSection from "@/sections/HeroSection.astro";
 import HistorySection from "@/sections/HistorySection.astro";
-import OurNumbersSection from "@/sections/OurNumbersSection.astro";
 import StyledDanceSection from "@/sections/StyledDanceSection.astro";
 import TestimonialsSection from "@/sections/TestimonialsSection.astro";
 const homePage = await getHomePage();
-const [heroSection] = homePage?.sections || [];
+const [heroSection, historySection] = homePage?.sections || [];
 const seo: { title: string; description: string } = homePage;
 ---
 
 <Layout title={seo.title} description={seo.description}>
   <HeroSection data={heroSection} />
-  <HistorySection />
-  <OurNumbersSection />
+  <HistorySection data={historySection} />
   <StyledDanceSection />
   <AgendaSection />
   <GallerySection />

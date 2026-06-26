@@ -1,0 +1,27 @@
+{
+  "collectionName": "components_component_history_highlights",
+  "info": {
+    "displayName": "History Highlight",
+    "icon": "briefcase"
+  },
+  "options": {},
+  "attributes": {
+    "year": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "body": {
+      "type": "text"
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    }
+  },
+  "config": {}
+}

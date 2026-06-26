@@ -16,7 +16,24 @@ const QUERY_HOME_PAGE = {
               fields: ["url", "alternativeText"],
             },
             link: {
-              populate: "*", // trae href, label, isExternal, variante
+              populate: "*",
+            },
+          },
+        },
+        "layout.history-section": {
+          // ✅ el componente
+          populate: {
+            home: {
+              // ✅ el campo repeatable (como se llama en Strapi)
+              populate: {
+                image: {
+                  // ✅ el único campo que necesita populate
+                  fields: ["url", "alternativeText"],
+                },
+              },
+            },
+            numbers: {
+              populate: "*",
             },
           },
         },
@@ -32,7 +49,6 @@ const QUERY_CLASSES_BRAND = {
 export async function getHomePage() {
   const query = qs.stringify(QUERY_HOME_PAGE);
   const response = await getStrapiData(`/api/home-page?${query}`);
-  console.log(`${BASE_URL}/api/home-page?${query}`);
   return response.data;
 }
 
@@ -49,7 +65,6 @@ export async function getStrapiData(url: string) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const data = await response.json();
-    console.log(data);
     return data;
   } catch (error) {
     console.error(error);

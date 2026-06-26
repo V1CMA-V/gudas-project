@@ -1,5 +1,19 @@
 import type { Schema, Struct } from '@strapi/strapi';
 
+export interface ComponentHistoryHighlight extends Struct.ComponentSchema {
+  collectionName: 'components_component_history_highlights';
+  info: {
+    displayName: 'History Highlight';
+    icon: 'briefcase';
+  };
+  attributes: {
+    body: Schema.Attribute.Text;
+    image: Schema.Attribute.Media<'images'>;
+    title: Schema.Attribute.String;
+    year: Schema.Attribute.String;
+  };
+}
+
 export interface ComponentLink extends Struct.ComponentSchema {
   collectionName: 'components_component_links';
   info: {
@@ -31,6 +45,19 @@ export interface ComponentLogistic extends Struct.ComponentSchema {
   };
 }
 
+export interface ComponentStat extends Struct.ComponentSchema {
+  collectionName: 'components_component_stats';
+  info: {
+    displayName: 'stat';
+    icon: 'eye';
+  };
+  attributes: {
+    icon: Schema.Attribute.Enumeration<['star', 'users', 'music']>;
+    label: Schema.Attribute.String;
+    value: Schema.Attribute.String;
+  };
+}
+
 export interface LayoutHeroSection extends Struct.ComponentSchema {
   collectionName: 'components_layout_hero_sections';
   info: {
@@ -50,12 +77,39 @@ export interface LayoutHeroSection extends Struct.ComponentSchema {
   };
 }
 
+export interface LayoutHistorySection extends Struct.ComponentSchema {
+  collectionName: 'components_layout_history_sections';
+  info: {
+    displayName: 'History Section';
+    icon: 'hashtag';
+  };
+  attributes: {
+    home: Schema.Attribute.Component<'component.history-highlight', true>;
+    numbers: Schema.Attribute.Component<'layout.our-numbers', false>;
+  };
+}
+
+export interface LayoutOurNumbers extends Struct.ComponentSchema {
+  collectionName: 'components_layout_our_numbers';
+  info: {
+    displayName: 'Our numbers';
+    icon: 'hashtag';
+  };
+  attributes: {
+    numbers: Schema.Attribute.Component<'component.stat', true>;
+  };
+}
+
 declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
+      'component.history-highlight': ComponentHistoryHighlight;
       'component.link': ComponentLink;
       'component.logistic': ComponentLogistic;
+      'component.stat': ComponentStat;
       'layout.hero-section': LayoutHeroSection;
+      'layout.history-section': LayoutHistorySection;
+      'layout.our-numbers': LayoutOurNumbers;
     }
   }
 }

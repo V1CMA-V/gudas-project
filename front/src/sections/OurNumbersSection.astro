@@ -1,3 +1,154 @@
-<section>
-  <p>OurNumbersSection.astro</p>
-</section>
+---
+interface NumberItem {
+  id?: number;
+  value: string;
+  label: string;
+  icon?: "star" | "users" | "music" | string;
+}
+
+interface OurNumbersSectionProps {
+  // accepts the array directly (data={data.numbers}) or a wrapper { numbers }
+  data: NumberItem[] | { numbers: NumberItem[] };
+}
+
+const { data } = Astro.props;
+const numbers: NumberItem[] = Array.isArray(data) ? data : (data?.numbers ?? []);
+
+const icons: Record<string, string> = {
+  star: '<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>',
+  users:
+    '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+  music:
+    '<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>',
+};
+const iconFor = (name?: string) => icons[name ?? ""] ?? icons.star;
+---
+
+{
+  numbers.length > 0 && (
+    <div class="numbers relative mt-[clamp(3rem,8vh,5rem)]">
+      <div class="mx-auto max-w-[1280px] px-[clamp(1.5rem,5vw,4.5rem)]">
+        <ul class="grid grid-cols-2 gap-y-12 border-t border-border pt-[clamp(2.5rem,6vh,4rem)] sm:grid-cols-4 sm:gap-y-0">
+          {numbers.map((item, i) => (
+            <li
+              class="stat relative px-2 text-center sm:px-8 sm:text-left sm:[&:not(:first-child)]:border-l sm:[&:not(:first-child)]:border-border"
+              style={`--i:${i}`}
+            >
+              <span
+                class="stat-icon mx-auto mb-4 flex h-11 w-11 items-center justify-center rounded-full text-ember sm:mx-0"
+                aria-hidden="true"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  class="h-5 w-5 fill-none stroke-current stroke-[1.6] [stroke-linecap:round] [stroke-linejoin:round]"
+                  set:html={iconFor(item.icon)}
+                />
+              </span>
+              <span
+                class="stat-num block text-[clamp(2.5rem,5vw,3.75rem)] leading-none tracking-tight [font-family:Fraunces,serif]"
+                data-value={item.value}
+              >
+                {item.value}
+              </span>
+              <p class="mt-3 text-[0.72rem] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+                {item.label}
+              </p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  )
+}
+
+<style>
+  .stat-icon {
+    border: 1px solid color-mix(in oklch, var(--color-ember) 28%, transparent);
+    background: color-mix(in oklch, var(--color-ember) 8%, transparent);
+  }
+
+  /* ember-gradient number */
+  .stat-num {
+    color: transparent;
+    background: linear-gradient(
+      120deg,
+      var(--color-ember) 0%,
+      var(--color-ember-soft) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+
+  /* reveal — engaged only when JS marks the band ready */
+  .numbers.reveal-ready .stat {
+    opacity: 0;
+    transform: translateY(24px);
+    transition:
+      opacity 0.6s ease,
+      transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    transition-delay: calc(var(--i) * 0.1s);
+  }
+  .numbers.reveal-ready .stat.in {
+    opacity: 1;
+    transform: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .numbers.reveal-ready .stat {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  const band = document.querySelector<HTMLElement>(".numbers");
+  const stats = band?.querySelectorAll<HTMLElement>(".stat");
+
+  if (band && stats?.length) {
+    band.classList.add("reveal-ready");
+
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+
+    // count-up that preserves a non-numeric prefix/suffix (e.g. "+", "%")
+    const countUp = (el: HTMLElement) => {
+      const raw = el.dataset.value ?? el.textContent ?? "";
+      const match = raw.match(/^(\D*)(\d+)(\D*)$/);
+      if (!match || reduceMotion) {
+        el.textContent = raw;
+        return;
+      }
+      const [, prefix, digits, suffix] = match;
+      const target = parseInt(digits, 10);
+      const duration = 1400;
+      const start = performance.now();
+
+      const tick = (now: number) => {
+        const p = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = `${prefix}${Math.round(eased * target)}${suffix}`;
+        if (p < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    };
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const el = entry.target as HTMLElement;
+          el.classList.add("in");
+          const num = el.querySelector<HTMLElement>(".stat-num");
+          if (num) countUp(num);
+          io.unobserve(el);
+        });
+      },
+      { threshold: 0.4 }
+    );
+
+    stats.forEach((stat) => io.observe(stat));
+  }
+</script>

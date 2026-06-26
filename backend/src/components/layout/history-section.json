@@ -1,0 +1,21 @@
+{
+  "collectionName": "components_layout_history_sections",
+  "info": {
+    "displayName": "History Section",
+    "icon": "hashtag"
+  },
+  "options": {},
+  "attributes": {
+    "home": {
+      "type": "component",
+      "component": "component.history-highlight",
+      "repeatable": true
+    },
+    "numbers": {
+      "type": "component",
+      "component": "layout.our-numbers",
+      "repeatable": false
+    }
+  },
+  "config": {}
+}
