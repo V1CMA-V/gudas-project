@@ -1,0 +1,24 @@
+{
+  "collectionName": "components_layout_gallery_homes",
+  "info": {
+    "displayName": "gallery-home",
+    "icon": "brush"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "default": "Momentos que nos definen"
+    },
+    "tagline": {
+      "type": "string",
+      "default": "Galería"
+    },
+    "gallery": {
+      "type": "component",
+      "component": "component.gallery-image",
+      "repeatable": true
+    }
+  },
+  "config": {}
+}

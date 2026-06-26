@@ -1,3 +1,310 @@
-<section>
-  <p>StyledDanceSection.astro</p>
+---
+import { getClasses } from "@/lib/strapi";
+import LinkButton from "@/components/LinkButton.astro";
+
+interface DanceClass {
+  id: number;
+  documentId: string;
+  label: string;
+  description: string;
+  level: string;
+  isActive: boolean;
+  isFeatured: boolean;
+  image: { url: string; alternativeText: string } | null;
+}
+
+const classes: DanceClass[] = await getClasses();
+const baseUrl = import.meta.env.STRAPI_API_URL;
+
+// Only surface active classes; featured ones float to the top of the stage.
+const active = classes
+  .filter((c) => c.isActive)
+  .sort((a, b) => Number(b.isFeatured) - Number(a.isFeatured));
+
+// A signature glyph per discipline — keeps the cards expressive while the
+// real photography (image: null today) is still being shot.
+const glyphFor = (label: string): string => {
+  const key = label.toLowerCase();
+  if (key.includes("ballet")) return "❀";
+  if (key.includes("contempor")) return "❋";
+  if (key.includes("jazz")) return "✺";
+  if (key.includes("árabe") || key.includes("arabe")) return "❂";
+  if (key.includes("urbana") || key.includes("urban")) return "✦";
+  return "✶";
+};
+---
+
+<section
+  class="styled relative isolate overflow-hidden bg-ink text-paper py-[clamp(5rem,13vh,9rem)]"
+>
+  <!-- atmosphere -->
+  <div class="styled__grain pointer-events-none absolute inset-0 z-0 opacity-40 mix-blend-soft-light" aria-hidden="true"></div>
+  <span class="styled__ghost pointer-events-none absolute -top-[2vw] right-[clamp(-2rem,2vw,2rem)] z-0 select-none [font-family:Fraunces,serif] max-[760px]:hidden" aria-hidden="true">estilos</span>
+
+  <div class="relative z-[2] mx-auto max-w-[1280px] px-[clamp(1.5rem,5vw,4.5rem)]">
+    <!-- header -->
+    <header class="mb-[clamp(3rem,7vh,5rem)] flex flex-wrap items-end justify-between gap-x-12 gap-y-8">
+      <div class="max-w-[40rem]">
+        <p class="mb-5 inline-flex items-center gap-[0.7rem] text-[0.72rem] font-medium uppercase tracking-[0.28em] text-[oklch(0.82_0.03_70_/_0.8)]">
+          <span class="styled__dot h-[7px] w-[7px] rounded-full bg-ember-soft"></span>
+          Nuestras clases
+        </p>
+        <h2 class="text-[clamp(2.4rem,6vw,4.5rem)] leading-[0.92] tracking-[-0.02em] [font-family:Fraunces,serif]">
+          Encuentra tu <span class="styled__accent italic">estilo</span>
+        </h2>
+      </div>
+      <p class="max-w-[26ch] text-[0.98rem] leading-[1.6] text-[oklch(0.84_0.02_70_/_0.7)] max-[760px]:max-w-none">
+        Cada disciplina es un lenguaje del cuerpo. Elige el tuyo y empieza a contar tu historia en movimiento.
+      </p>
+    </header>
+
+    <!-- class grid -->
+    <ul class="styled__grid grid list-none grid-cols-1 gap-[clamp(1rem,1.6vw,1.5rem)] p-0 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        active.map((item, i) => (
+          <li
+            class:list={[
+              "card group relative flex flex-col overflow-hidden rounded-[24px]",
+              item.isFeatured && "card--featured",
+            ]}
+            style={`--i:${i}`}
+          >
+            <a
+              href={`/clases/${item.documentId}`}
+              class="relative flex h-full flex-col p-[clamp(1.6rem,2.4vw,2.2rem)] no-underline"
+              aria-label={`Conocer la clase de ${item.label}`}
+            >
+              {/* visual plate — real image when available, signature glyph otherwise */}
+              <div class="card__plate relative mb-[clamp(1.4rem,2vw,2rem)] flex aspect-[16/10] items-center justify-center overflow-hidden rounded-[16px]">
+                {item.image ? (
+                  <img
+                    src={baseUrl + item.image.url}
+                    alt={item.image.alternativeText || item.label}
+                    loading="lazy"
+                    class="h-full w-full rounded-[inherit] object-cover object-center transition-transform duration-[900ms] [transition-timing-function:cubic-bezier(0.2,0.8,0.2,1)] group-hover:scale-[1.06]"
+                  />
+                ) : (
+                  <span class="card__glyph [font-family:Fraunces,serif] transition-transform duration-[700ms] [transition-timing-function:cubic-bezier(0.2,0.8,0.2,1)] group-hover:scale-[1.12] group-hover:rotate-6">
+                    {glyphFor(item.label)}
+                  </span>
+                )}
+                <span class="card__index absolute right-[0.9rem] bottom-[0.5rem] [font-family:Fraunces,serif] leading-none">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                {item.isFeatured && (
+                  <span class="card__ribbon absolute left-[0.9rem] top-[0.9rem] inline-flex items-center gap-[0.4rem] rounded-full px-[0.7rem] py-[0.35rem] text-[0.6rem] font-semibold uppercase tracking-[0.18em]">
+                    <i class="h-[5px] w-[5px] rounded-full bg-current not-italic" /> Destacada
+                  </span>
+                )}
+              </div>
+
+              {/* meta */}
+              <span class="card__level mb-3 inline-flex w-fit items-center rounded-full border px-[0.7rem] py-[0.3rem] text-[0.64rem] font-medium uppercase tracking-[0.16em]">
+                {item.level}
+              </span>
+
+              <h3 class="text-[clamp(1.4rem,2.2vw,1.9rem)] leading-[1.05] tracking-[-0.01em] [font-family:Fraunces,serif]">
+                {item.label}
+              </h3>
+
+              <p class="mt-3 text-[0.94rem] leading-[1.6] text-[oklch(0.85_0.02_70_/_0.66)]">
+                {item.description}
+              </p>
+
+              <span class="card__cta mt-[clamp(1.4rem,2.5vw,2rem)] inline-flex items-center gap-[0.5rem] text-[0.74rem] font-semibold uppercase tracking-[0.14em] text-ember-soft">
+                Conocer la clase
+                <svg viewBox="0 0 24 24" aria-hidden="true" class="h-[1.05em] w-[1.05em] fill-none stroke-current stroke-2 transition-transform duration-[350ms] [stroke-linecap:round] [stroke-linejoin:round] group-hover:translate-x-1">
+                  <path d="M5 12h14M13 6l6 6-6 6" />
+                </svg>
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+
+    <!-- footer CTA -->
+    <div class="mt-[clamp(3rem,6vh,4.5rem)] flex flex-wrap items-center gap-6">
+      <LinkButton href="/clases" label="Ver todas las clases" variant="solid" />
+      <p class="text-[0.86rem] text-[oklch(0.84_0.02_70_/_0.6)]">
+        {active.length} disciplinas para todos los niveles
+      </p>
+    </div>
+  </div>
 </section>
+
+<style>
+  /* warm stage glow over the deep ink, theme-independent dark surface */
+  .styled {
+    background:
+      radial-gradient(80% 60% at 12% -8%, oklch(0.26 0.07 35) 0%, transparent 55%),
+      radial-gradient(70% 60% at 100% 110%, oklch(0.22 0.06 30) 0%, transparent 60%),
+      linear-gradient(170deg, var(--color-ink) 0%, var(--color-ink-deep) 100%);
+  }
+
+  .styled__grain {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* oversized ghost word bleeding off the top-right */
+  .styled__ghost {
+    font-size: clamp(8rem, 22vw, 20rem);
+    font-style: italic;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    color: transparent;
+    -webkit-text-stroke: 1px oklch(0.9 0.05 70 / 0.06);
+  }
+
+  .styled__dot {
+    box-shadow: 0 0 0 0 oklch(0.78 0.16 55 / 0.7);
+    animation: styled-pulse 2.4s ease-out infinite;
+  }
+
+  .styled__accent {
+    color: transparent;
+    background: linear-gradient(
+      100deg,
+      var(--color-ember-soft),
+      var(--color-ember) 65%,
+      oklch(0.6 0.22 25)
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    padding-right: 0.06em;
+  }
+
+  /* ── card ───────────────────────────────────────────── */
+  .card {
+    background: linear-gradient(
+      165deg,
+      oklch(0.9 0.04 70 / 0.06) 0%,
+      oklch(0.9 0.04 70 / 0.02) 100%
+    );
+    border: 1px solid oklch(0.9 0.05 70 / 0.1);
+    backdrop-filter: blur(6px);
+    transition:
+      transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1),
+      border-color 0.5s ease,
+      box-shadow 0.5s ease;
+  }
+  .card::before {
+    /* hairline ember edge that ignites on hover */
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(
+      160deg,
+      color-mix(in oklch, var(--color-ember) 55%, transparent),
+      transparent 45%
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    pointer-events: none;
+  }
+  .card:hover {
+    transform: translateY(-6px);
+    border-color: color-mix(in oklch, var(--color-ember) 35%, transparent);
+    box-shadow:
+      0 30px 60px -30px oklch(0.05 0.02 35 / 0.8),
+      0 0 50px -24px color-mix(in oklch, var(--color-ember) 60%, transparent);
+  }
+  .card:hover::before {
+    opacity: 1;
+  }
+
+  /* visual plate */
+  .card__plate {
+    background:
+      radial-gradient(120% 120% at 0% 0%, oklch(0.3 0.08 38 / 0.55), transparent 60%),
+      linear-gradient(150deg, oklch(0.2 0.04 35) 0%, oklch(0.14 0.02 30) 100%);
+    border: 1px solid oklch(0.9 0.05 70 / 0.08);
+  }
+  .card__glyph {
+    font-size: clamp(3.5rem, 7vw, 5.5rem);
+    color: transparent;
+    background: linear-gradient(120deg, var(--color-ember-soft), var(--color-ember));
+    -webkit-background-clip: text;
+    background-clip: text;
+    filter: drop-shadow(0 6px 22px oklch(0.66 0.2 38 / 0.35));
+  }
+  .card__index {
+    font-size: clamp(2.2rem, 4vw, 3.2rem);
+    font-style: italic;
+    color: oklch(0.9 0.05 70 / 0.14);
+  }
+  .card__ribbon {
+    color: oklch(0.16 0.02 40);
+    background: linear-gradient(135deg, var(--color-ember-soft), var(--color-ember));
+    box-shadow: 0 8px 20px -10px oklch(0.66 0.2 38 / 0.8);
+  }
+  .card__level {
+    border-color: oklch(0.9 0.05 70 / 0.18);
+    color: oklch(0.86 0.03 70 / 0.85);
+  }
+
+  /* ── reveal ─────────────────────────────────────────── */
+  .reveal-ready .card {
+    opacity: 0;
+    transform: translateY(34px);
+    transition:
+      opacity 0.7s ease,
+      transform 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+      border-color 0.5s ease,
+      box-shadow 0.5s ease;
+    transition-delay: calc(var(--i) * 0.08s);
+  }
+  .reveal-ready .card.in {
+    opacity: 1;
+    transform: none;
+  }
+
+  @keyframes styled-pulse {
+    0% { box-shadow: 0 0 0 0 oklch(0.78 0.16 55 / 0.7); }
+    70% { box-shadow: 0 0 0 10px oklch(0.78 0.16 55 / 0); }
+    100% { box-shadow: 0 0 0 0 oklch(0.78 0.16 55 / 0); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal-ready .card {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+    .styled__dot,
+    .card__glyph {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  const section = document.querySelector<HTMLElement>(".styled");
+  const cards = section?.querySelectorAll<HTMLElement>(".card");
+
+  if (section && cards?.length) {
+    section.classList.add("reveal-ready");
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("in");
+            io.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.2, rootMargin: "0px 0px -8% 0px" }
+    );
+
+    cards.forEach((card) => io.observe(card));
+  }
+</script>

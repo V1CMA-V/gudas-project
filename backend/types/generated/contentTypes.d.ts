@@ -497,12 +497,55 @@ export interface ApiHomePageHomePage extends Struct.SingleTypeSchema {
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
     sections: Schema.Attribute.DynamicZone<
-      ['layout.hero-section', 'layout.history-section']
+      [
+        'layout.hero-section',
+        'layout.history-section',
+        'layout.gallery-home',
+        'layout.testimonials-section',
+      ]
     >;
     title: Schema.Attribute.String & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+  };
+}
+
+export interface ApiSchoolInfoSchoolInfo extends Struct.SingleTypeSchema {
+  collectionName: 'school_infos';
+  info: {
+    displayName: 'School Info';
+    pluralName: 'school-infos';
+    singularName: 'school-info';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    address: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    email: Schema.Attribute.String;
+    instagram: Schema.Attribute.String;
+    lattitud: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::school-info.school-info'
+    > &
+      Schema.Attribute.Private;
+    logo: Schema.Attribute.Media<'images'>;
+    longitud: Schema.Attribute.String;
+    mapUrl: Schema.Attribute.String;
+    phone: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    schedule: Schema.Attribute.String;
+    tiktok: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    whatsapp: Schema.Attribute.String;
   };
 }
 
@@ -1019,6 +1062,7 @@ declare module '@strapi/strapi' {
       'admin::user': AdminUser;
       'api::class.class': ApiClassClass;
       'api::home-page.home-page': ApiHomePageHomePage;
+      'api::school-info.school-info': ApiSchoolInfoSchoolInfo;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;

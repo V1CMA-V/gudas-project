@@ -1,7 +1,6 @@
 ---
 import Layout from "@/layouts/Layout.astro";
 import { getHomePage } from "@/lib/strapi";
-import AgendaSection from "@/sections/AgendaSection.astro";
 import ContactSection from "@/sections/ContactSection.astro";
 import GallerySection from "@/sections/GallerySection.astro";
 import HeroSection from "@/sections/HeroSection.astro";
@@ -9,7 +8,8 @@ import HistorySection from "@/sections/HistorySection.astro";
 import StyledDanceSection from "@/sections/StyledDanceSection.astro";
 import TestimonialsSection from "@/sections/TestimonialsSection.astro";
 const homePage = await getHomePage();
-const [heroSection, historySection] = homePage?.sections || [];
+const [heroSection, historySection, gallerySection, testimonialsSection] =
+  homePage?.sections || [];
 const seo: { title: string; description: string } = homePage;
 ---
 
@@ -17,8 +17,7 @@ const seo: { title: string; description: string } = homePage;
   <HeroSection data={heroSection} />
   <HistorySection data={historySection} />
   <StyledDanceSection />
-  <AgendaSection />
-  <GallerySection />
-  <TestimonialsSection />
+  <GallerySection data={gallerySection} />
+  <TestimonialsSection data={testimonialsSection} />
   <ContactSection />
 </Layout>

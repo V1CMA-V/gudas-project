@@ -1,0 +1,33 @@
+{
+  "collectionName": "components_component_gallery_images",
+  "info": {
+    "displayName": "gallery-image",
+    "icon": "envelop"
+  },
+  "options": {},
+  "attributes": {
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "orientation": {
+      "type": "enumeration",
+      "enum": [
+        "horizontal",
+        "vertical",
+        "cuadrada"
+      ]
+    },
+    "alt": {
+      "type": "string"
+    },
+    "featured": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "config": {}
+}

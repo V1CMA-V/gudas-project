@@ -22,7 +22,9 @@
       "type": "dynamiczone",
       "components": [
         "layout.hero-section",
-        "layout.history-section"
+        "layout.history-section",
+        "layout.gallery-home",
+        "layout.testimonials-section"
       ]
     }
   }

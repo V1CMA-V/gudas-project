@@ -1,0 +1,16 @@
+{
+  "collectionName": "components_layout_testimonials_sections",
+  "info": {
+    "displayName": "Testimonials Section",
+    "icon": "stack"
+  },
+  "options": {},
+  "attributes": {
+    "testimonials": {
+      "type": "component",
+      "component": "component.testimonial",
+      "repeatable": true
+    }
+  },
+  "config": {}
+}

@@ -1,5 +1,21 @@
 import type { Schema, Struct } from '@strapi/strapi';
 
+export interface ComponentGalleryImage extends Struct.ComponentSchema {
+  collectionName: 'components_component_gallery_images';
+  info: {
+    displayName: 'gallery-image';
+    icon: 'envelop';
+  };
+  attributes: {
+    alt: Schema.Attribute.String;
+    featured: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    image: Schema.Attribute.Media<'images'>;
+    orientation: Schema.Attribute.Enumeration<
+      ['horizontal', 'vertical', 'cuadrada']
+    >;
+  };
+}
+
 export interface ComponentHistoryHighlight extends Struct.ComponentSchema {
   collectionName: 'components_component_history_highlights';
   info: {
@@ -58,6 +74,38 @@ export interface ComponentStat extends Struct.ComponentSchema {
   };
 }
 
+export interface ComponentTestimonial extends Struct.ComponentSchema {
+  collectionName: 'components_component_testimonials';
+  info: {
+    displayName: 'Testimonial';
+    icon: 'pin';
+  };
+  attributes: {
+    avatar: Schema.Attribute.Media<'images'>;
+    body: Schema.Attribute.Text;
+    isActive: Schema.Attribute.Boolean;
+    isFeatured: Schema.Attribute.Boolean;
+    name: Schema.Attribute.String;
+    rating: Schema.Attribute.Integer;
+    role: Schema.Attribute.String;
+  };
+}
+
+export interface LayoutGalleryHome extends Struct.ComponentSchema {
+  collectionName: 'components_layout_gallery_homes';
+  info: {
+    displayName: 'gallery-home';
+    icon: 'brush';
+  };
+  attributes: {
+    gallery: Schema.Attribute.Component<'component.gallery-image', true>;
+    tagline: Schema.Attribute.String &
+      Schema.Attribute.DefaultTo<'Galer\u00EDa'>;
+    title: Schema.Attribute.String &
+      Schema.Attribute.DefaultTo<'Momentos que nos definen'>;
+  };
+}
+
 export interface LayoutHeroSection extends Struct.ComponentSchema {
   collectionName: 'components_layout_hero_sections';
   info: {
@@ -100,16 +148,31 @@ export interface LayoutOurNumbers extends Struct.ComponentSchema {
   };
 }
 
+export interface LayoutTestimonialsSection extends Struct.ComponentSchema {
+  collectionName: 'components_layout_testimonials_sections';
+  info: {
+    displayName: 'Testimonials Section';
+    icon: 'stack';
+  };
+  attributes: {
+    testimonials: Schema.Attribute.Component<'component.testimonial', true>;
+  };
+}
+
 declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
+      'component.gallery-image': ComponentGalleryImage;
       'component.history-highlight': ComponentHistoryHighlight;
       'component.link': ComponentLink;
       'component.logistic': ComponentLogistic;
       'component.stat': ComponentStat;
+      'component.testimonial': ComponentTestimonial;
+      'layout.gallery-home': LayoutGalleryHome;
       'layout.hero-section': LayoutHeroSection;
       'layout.history-section': LayoutHistorySection;
       'layout.our-numbers': LayoutOurNumbers;
+      'layout.testimonials-section': LayoutTestimonialsSection;
     }
   }
 }

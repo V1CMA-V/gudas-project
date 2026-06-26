@@ -1,3 +1,307 @@
-<section>
-  <p>GallerySection.astro</p>
+---
+interface GalleryItem {
+  id: number;
+  orientation: "cuadrada" | "vertical" | "horizontal" | string;
+  alt: string;
+  featured: boolean;
+  image: { url: string; alternativeText: string } | null;
+}
+
+interface GallerySectionProps {
+  data: {
+    title: string;
+    tagline: string;
+    gallery: GalleryItem[];
+  };
+}
+
+const { data } = Astro.props;
+const baseUrl = import.meta.env.STRAPI_API_URL;
+
+const title = data?.title ?? "Momentos que nos definen";
+const tagline = data?.tagline ?? "Galería";
+const items = (data?.gallery ?? []).filter((i) => i.image);
+
+// Map each tile's footprint in the bento grid. A featured photo always takes
+// the hero slot; otherwise the orientation drives whether it runs tall or wide.
+const spanFor = (item: GalleryItem): string => {
+  if (item.featured) return "gallery__tile--feature";
+  switch (item.orientation) {
+    case "vertical":
+      return "gallery__tile--tall";
+    case "horizontal":
+      return "gallery__tile--wide";
+    default:
+      return "gallery__tile--square";
+  }
+};
+---
+
+<section
+  class="gallery relative isolate overflow-hidden py-[clamp(5rem,12vh,9rem)]"
+>
+  <div class="relative z-[1] mx-auto max-w-[1280px] px-[clamp(1.5rem,5vw,4.5rem)]">
+    <!-- header -->
+    <header
+      class="mb-[clamp(2.5rem,6vh,4.5rem)] flex flex-wrap items-end justify-between gap-x-12 gap-y-6"
+    >
+      <div class="max-w-[40rem]">
+        <p
+          class="mb-5 inline-flex items-center gap-[0.7rem] text-[0.72rem] font-medium uppercase tracking-[0.28em] text-muted-foreground"
+        >
+          <span class="gallery__dot h-[7px] w-[7px] rounded-full bg-ember"></span>
+          {tagline}
+        </p>
+        <h2
+          class="text-[clamp(2.4rem,5.5vw,4rem)] leading-[0.95] tracking-[-0.02em] [font-family:Fraunces,serif]"
+        >
+          {title}
+        </h2>
+      </div>
+      <span
+        class="hidden text-[0.82rem] uppercase tracking-[0.28em] text-muted-foreground sm:inline-block"
+      >
+        {String(items.length).padStart(2, "0")} — capturas
+      </span>
+    </header>
+
+    <!-- bento grid -->
+    <div class="gallery__grid">
+      {
+        items.map((item, i) => (
+          <figure
+            class:list={["gallery__tile group", spanFor(item)]}
+            style={`--i:${i}`}
+          >
+            <img
+              src={baseUrl + item.image!.url}
+              alt={item.alt || item.image!.alternativeText || title}
+              loading="lazy"
+              class="h-full w-full object-cover object-center transition-transform duration-[1100ms] [transition-timing-function:cubic-bezier(0.2,0.8,0.2,1)] group-hover:scale-[1.07]"
+            />
+            <figcaption class="gallery__cap">
+              <span class="gallery__cap-line" />
+              {item.alt || "En escena"}
+            </figcaption>
+            {item.featured && (
+              <span class="gallery__badge">Destacada</span>
+            )}
+          </figure>
+        ))
+      }
+    </div>
+  </div>
 </section>
+
+<style>
+  /* subtle warm wash so the gallery breathes against the page */
+  .gallery {
+    background: radial-gradient(
+      70% 50% at 5% 0%,
+      color-mix(in oklch, var(--color-ember) 9%, transparent) 0%,
+      transparent 55%
+    );
+  }
+
+  .gallery__dot {
+    box-shadow: 0 0 0 0 oklch(0.66 0.2 38 / 0.6);
+    animation: gallery-pulse 2.6s ease-out infinite;
+  }
+
+  /* ── bento grid ─────────────────────────────────────── */
+  .gallery__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: clamp(8rem, 13vw, 12rem);
+    grid-auto-flow: dense;
+    gap: clamp(0.75rem, 1.4vw, 1.25rem);
+  }
+
+  /* footprints */
+  .gallery__tile--square {
+    grid-column: span 1;
+    grid-row: span 2;
+  }
+  .gallery__tile--tall {
+    grid-column: span 1;
+    grid-row: span 3;
+  }
+  .gallery__tile--wide {
+    grid-column: span 2;
+    grid-row: span 2;
+  }
+  .gallery__tile--feature {
+    grid-column: span 2;
+    grid-row: span 3;
+  }
+
+  @media (max-width: 900px) {
+    .gallery__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .gallery__tile--feature,
+    .gallery__tile--wide {
+      grid-column: span 2;
+    }
+  }
+  @media (max-width: 520px) {
+    .gallery__grid {
+      grid-template-columns: 1fr;
+      grid-auto-rows: clamp(11rem, 60vw, 16rem);
+    }
+    .gallery__tile,
+    .gallery__tile--feature,
+    .gallery__tile--wide,
+    .gallery__tile--tall,
+    .gallery__tile--square {
+      grid-column: span 1;
+      grid-row: span 1;
+    }
+  }
+
+  /* ── tile ───────────────────────────────────────────── */
+  .gallery__tile {
+    position: relative;
+    margin: 0;
+    overflow: hidden;
+    border-radius: 18px;
+    border: 1px solid color-mix(in oklch, var(--color-ember) 14%, transparent);
+    box-shadow: 0 24px 48px -32px oklch(0.05 0.02 35 / 0.5);
+    transition:
+      transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1),
+      box-shadow 0.5s ease,
+      border-color 0.5s ease;
+    will-change: transform;
+  }
+  .gallery__tile::after {
+    /* readability veil that deepens on hover */
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+      200deg,
+      transparent 45%,
+      oklch(0.11 0.02 35 / 0.55) 100%
+    );
+    opacity: 0.7;
+    transition: opacity 0.5s ease;
+  }
+  .gallery__tile:hover {
+    transform: translateY(-5px);
+    border-color: color-mix(in oklch, var(--color-ember) 40%, transparent);
+    box-shadow:
+      0 36px 64px -30px oklch(0.05 0.02 35 / 0.6),
+      0 0 50px -26px color-mix(in oklch, var(--color-ember) 55%, transparent);
+  }
+  .gallery__tile:hover::after {
+    opacity: 1;
+  }
+
+  /* caption — slides up on hover */
+  .gallery__cap {
+    position: absolute;
+    left: clamp(0.9rem, 1.4vw, 1.2rem);
+    bottom: clamp(0.9rem, 1.4vw, 1.2rem);
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: Fraunces, serif;
+    font-style: italic;
+    font-size: clamp(0.9rem, 1.3vw, 1.1rem);
+    color: var(--color-paper);
+    text-shadow: 0 2px 12px oklch(0.05 0.02 35 / 0.7);
+    opacity: 0;
+    transform: translateY(10px);
+    transition:
+      opacity 0.45s ease,
+      transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .gallery__cap-line {
+    display: inline-block;
+    width: 1.6rem;
+    height: 1px;
+    background: var(--color-ember-soft);
+  }
+  .gallery__tile:hover .gallery__cap {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* featured badge */
+  .gallery__badge {
+    position: absolute;
+    left: clamp(0.9rem, 1.4vw, 1.2rem);
+    top: clamp(0.9rem, 1.4vw, 1.2rem);
+    z-index: 2;
+    border-radius: 999px;
+    padding: 0.35rem 0.7rem;
+    font-size: 0.6rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: oklch(0.16 0.02 40);
+    background: linear-gradient(135deg, var(--color-ember-soft), var(--color-ember));
+    box-shadow: 0 8px 20px -10px oklch(0.66 0.2 38 / 0.8);
+  }
+
+  /* ── reveal ─────────────────────────────────────────── */
+  .reveal-ready .gallery__tile {
+    opacity: 0;
+    transform: translateY(28px) scale(0.97);
+    transition:
+      opacity 0.7s ease,
+      transform 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 0.5s ease,
+      border-color 0.5s ease;
+    transition-delay: calc(var(--i) * 0.07s);
+  }
+  .reveal-ready .gallery__tile.in {
+    opacity: 1;
+    transform: none;
+  }
+
+  @keyframes gallery-pulse {
+    0% { box-shadow: 0 0 0 0 oklch(0.66 0.2 38 / 0.6); }
+    70% { box-shadow: 0 0 0 10px oklch(0.66 0.2 38 / 0); }
+    100% { box-shadow: 0 0 0 0 oklch(0.66 0.2 38 / 0); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal-ready .gallery__tile {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+    .gallery__dot {
+      animation: none;
+    }
+    .gallery__tile img {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  const section = document.querySelector<HTMLElement>(".gallery");
+  const tiles = section?.querySelectorAll<HTMLElement>(".gallery__tile");
+
+  if (section && tiles?.length) {
+    section.classList.add("reveal-ready");
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("in");
+            io.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.15, rootMargin: "0px 0px -8% 0px" }
+    );
+
+    tiles.forEach((tile) => io.observe(tile));
+  }
+</script>

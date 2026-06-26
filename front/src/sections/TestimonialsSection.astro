@@ -1,3 +1,306 @@
-<section>
-  <p>TestimonialsSection.astro</p>
-</section>
+---
+interface Testimonial {
+  id: number;
+  name: string;
+  role: string;
+  body: string;
+  rating: number;
+  isActive: boolean;
+  isFeatured: boolean;
+  avatar: { url: string; alternativeText: string } | null;
+}
+
+interface TestimonialsSectionProps {
+  data: {
+    testimonials: Testimonial[];
+  };
+}
+
+const { data } = Astro.props;
+const baseUrl = import.meta.env.STRAPI_API_URL;
+
+const active = (data?.testimonials ?? []).filter((t) => t.isActive);
+
+// The featured voice headlines the section; everyone else falls into the grid.
+const featured = active.find((t) => t.isFeatured) ?? active[0];
+const rest = active.filter((t) => t !== featured);
+
+// Initials fallback when no avatar is uploaded.
+const initials = (name: string): string =>
+  name
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((w) => w[0]?.toUpperCase() ?? "")
+    .join("");
+
+const stars = (rating: number): boolean[] =>
+  Array.from({ length: 5 }, (_, i) => i < Math.round(rating || 0));
+---
+
+{
+  active.length > 0 && (
+    <section class="tm relative isolate overflow-hidden py-[clamp(5rem,12vh,9rem)]">
+      <span class="tm__quote-bg pointer-events-none absolute select-none [font-family:Fraunces,serif]" aria-hidden="true">
+        &#8220;
+      </span>
+
+      <div class="relative z-[1] mx-auto max-w-[1280px] px-[clamp(1.5rem,5vw,4.5rem)]">
+        {/* header */}
+        <header class="mb-[clamp(2.5rem,6vh,4rem)] max-w-[40rem]">
+          <p class="mb-5 inline-flex items-center gap-[0.7rem] text-[0.72rem] font-medium uppercase tracking-[0.28em] text-muted-foreground">
+            <span class="tm__dot h-[7px] w-[7px] rounded-full bg-ember" />
+            Testimonios
+          </p>
+          <h2 class="text-[clamp(2.4rem,5.5vw,4rem)] leading-[0.95] tracking-[-0.02em] [font-family:Fraunces,serif]">
+            Voces que <span class="tm__accent italic">bailan con nosotros</span>
+          </h2>
+        </header>
+
+        {/* featured pull-quote */}
+        {featured && (
+          <figure class="tm__feature group relative mb-[clamp(1rem,1.6vw,1.5rem)] overflow-hidden rounded-[28px] p-[clamp(1.8rem,4vw,3.5rem)]">
+            <div class="tm__stars mb-6 flex gap-[0.3rem]" aria-label={`${Math.round(featured.rating)} de 5`}>
+              {stars(featured.rating).map((on) => (
+                <svg viewBox="0 0 24 24" aria-hidden="true" class:list={["h-[1.1rem] w-[1.1rem]", on ? "tm__star--on" : "tm__star--off"]}>
+                  <path d="M12 2l2.9 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l7.1-1.01L12 2z" />
+                </svg>
+              ))}
+            </div>
+
+            <blockquote class="tm__feature-body max-w-[40ch] text-[clamp(1.4rem,2.8vw,2.25rem)] font-light leading-[1.35] tracking-[-0.01em] [font-family:Fraunces,serif]">
+              {featured.body}
+            </blockquote>
+
+            <figcaption class="mt-[clamp(1.6rem,3vw,2.4rem)] flex items-center gap-4">
+              {featured.avatar ? (
+                <img
+                  src={baseUrl + featured.avatar.url}
+                  alt={featured.avatar.alternativeText || featured.name}
+                  loading="lazy"
+                  class="h-14 w-14 rounded-full object-cover ring-2 ring-[color-mix(in_oklch,var(--color-ember)_45%,transparent)]"
+                />
+              ) : (
+                <span class="tm__monogram flex h-14 w-14 items-center justify-center rounded-full text-[1rem] font-semibold">
+                  {initials(featured.name)}
+                </span>
+              )}
+              <div>
+                <p class="text-[1.05rem] font-semibold tracking-tight [font-family:Fraunces,serif]">
+                  {featured.name}
+                </p>
+                <p class="text-[0.85rem] text-muted-foreground">{featured.role}</p>
+              </div>
+            </figcaption>
+          </figure>
+        )}
+
+        {/* supporting grid */}
+        {rest.length > 0 && (
+          <ul class="tm__grid grid list-none grid-cols-1 gap-[clamp(1rem,1.6vw,1.5rem)] p-0 md:grid-cols-2 lg:grid-cols-3">
+            {rest.map((t, i) => (
+              <li class="tm__card group relative flex flex-col rounded-[22px] p-[clamp(1.5rem,2.2vw,2rem)]" style={`--i:${i}`}>
+                <div class="tm__stars mb-4 flex gap-[0.25rem]" aria-label={`${Math.round(t.rating)} de 5`}>
+                  {stars(t.rating).map((on) => (
+                    <svg viewBox="0 0 24 24" aria-hidden="true" class:list={["h-[0.9rem] w-[0.9rem]", on ? "tm__star--on" : "tm__star--off"]}>
+                      <path d="M12 2l2.9 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l7.1-1.01L12 2z" />
+                    </svg>
+                  ))}
+                </div>
+
+                <blockquote class="flex-1 text-[0.98rem] leading-[1.6] text-foreground/85">
+                  {t.body}
+                </blockquote>
+
+                <figcaption class="mt-6 flex items-center gap-3 not-italic">
+                  {t.avatar ? (
+                    <img
+                      src={baseUrl + t.avatar.url}
+                      alt={t.avatar.alternativeText || t.name}
+                      loading="lazy"
+                      class="h-11 w-11 rounded-full object-cover ring-1 ring-border"
+                    />
+                  ) : (
+                    <span class="tm__monogram flex h-11 w-11 items-center justify-center rounded-full text-[0.85rem] font-semibold">
+                      {initials(t.name)}
+                    </span>
+                  )}
+                  <div>
+                    <p class="text-[0.95rem] font-semibold tracking-tight [font-family:Fraunces,serif]">
+                      {t.name}
+                    </p>
+                    <p class="text-[0.8rem] text-muted-foreground">{t.role}</p>
+                  </div>
+                </figcaption>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </section>
+  )
+}
+
+<style>
+  /* warm wash from the lower right */
+  .tm {
+    background: radial-gradient(
+      65% 55% at 95% 105%,
+      color-mix(in oklch, var(--color-ember) 9%, transparent) 0%,
+      transparent 60%
+    );
+  }
+
+  /* giant ghost quotation mark */
+  .tm__quote-bg {
+    top: clamp(-3rem, -2vw, -1rem);
+    right: clamp(1rem, 6vw, 7rem);
+    font-size: clamp(14rem, 30vw, 28rem);
+    line-height: 1;
+    color: transparent;
+    -webkit-text-stroke: 1.5px color-mix(in oklch, var(--color-ember) 14%, transparent);
+    z-index: 0;
+  }
+
+  .tm__dot {
+    box-shadow: 0 0 0 0 oklch(0.66 0.2 38 / 0.6);
+    animation: tm-pulse 2.6s ease-out infinite;
+  }
+
+  .tm__accent {
+    color: transparent;
+    background: linear-gradient(
+      100deg,
+      var(--color-ember-soft),
+      var(--color-ember) 65%,
+      oklch(0.6 0.22 25)
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    padding-right: 0.06em;
+  }
+
+  /* stars */
+  .tm__star--on {
+    fill: var(--color-ember);
+    filter: drop-shadow(0 2px 6px oklch(0.66 0.2 38 / 0.35));
+  }
+  .tm__star--off {
+    fill: color-mix(in oklch, var(--foreground) 18%, transparent);
+  }
+
+  /* monogram fallback */
+  .tm__monogram {
+    color: oklch(0.16 0.02 40);
+    background: linear-gradient(135deg, var(--color-ember-soft), var(--color-ember));
+    font-family: Montserrat Variable, sans-serif;
+    box-shadow: 0 8px 20px -10px oklch(0.66 0.2 38 / 0.7);
+  }
+
+  /* featured card — accented surface */
+  .tm__feature {
+    background: linear-gradient(
+      150deg,
+      color-mix(in oklch, var(--color-ember) 8%, var(--card)) 0%,
+      var(--card) 60%
+    );
+    border: 1px solid color-mix(in oklch, var(--color-ember) 20%, transparent);
+    box-shadow:
+      0 40px 80px -40px oklch(0.05 0.02 35 / 0.4),
+      0 0 60px -30px color-mix(in oklch, var(--color-ember) 40%, transparent);
+  }
+  .tm__feature::before {
+    /* oversized opening quote inside the card */
+    content: "\201C";
+    position: absolute;
+    top: clamp(-1.5rem, -1vw, -0.5rem);
+    right: clamp(1rem, 3vw, 3rem);
+    font-family: Fraunces, serif;
+    font-size: clamp(7rem, 14vw, 12rem);
+    line-height: 1;
+    color: color-mix(in oklch, var(--color-ember) 12%, transparent);
+    pointer-events: none;
+  }
+  .tm__feature-body {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* supporting cards */
+  .tm__card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    transition:
+      transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1),
+      border-color 0.5s ease,
+      box-shadow 0.5s ease;
+  }
+  .tm__card:hover {
+    transform: translateY(-5px);
+    border-color: color-mix(in oklch, var(--color-ember) 35%, transparent);
+    box-shadow:
+      0 28px 56px -32px oklch(0.05 0.02 35 / 0.45),
+      0 0 44px -26px color-mix(in oklch, var(--color-ember) 50%, transparent);
+  }
+
+  /* reveal */
+  .reveal-ready .tm__feature,
+  .reveal-ready .tm__card {
+    opacity: 0;
+    transform: translateY(30px);
+    transition:
+      opacity 0.7s ease,
+      transform 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+      border-color 0.5s ease,
+      box-shadow 0.5s ease;
+  }
+  .reveal-ready .tm__card {
+    transition-delay: calc(var(--i) * 0.08s);
+  }
+  .reveal-ready .tm__feature.in,
+  .reveal-ready .tm__card.in {
+    opacity: 1;
+    transform: none;
+  }
+
+  @keyframes tm-pulse {
+    0% { box-shadow: 0 0 0 0 oklch(0.66 0.2 38 / 0.6); }
+    70% { box-shadow: 0 0 0 10px oklch(0.66 0.2 38 / 0); }
+    100% { box-shadow: 0 0 0 0 oklch(0.66 0.2 38 / 0); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal-ready .tm__feature,
+    .reveal-ready .tm__card {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+    .tm__dot {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  const section = document.querySelector<HTMLElement>(".tm");
+  const items = section?.querySelectorAll<HTMLElement>(".tm__feature, .tm__card");
+
+  if (section && items?.length) {
+    section.classList.add("reveal-ready");
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("in");
+            io.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.2, rootMargin: "0px 0px -8% 0px" }
+    );
+
+    items.forEach((item) => io.observe(item));
+  }
+</script>

@@ -1,0 +1,36 @@
+{
+  "collectionName": "components_component_testimonials",
+  "info": {
+    "displayName": "Testimonial",
+    "icon": "pin"
+  },
+  "options": {},
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "role": {
+      "type": "string"
+    },
+    "body": {
+      "type": "text"
+    },
+    "avatar": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "rating": {
+      "type": "integer"
+    },
+    "isActive": {
+      "type": "boolean"
+    },
+    "isFeatured": {
+      "type": "boolean"
+    }
+  },
+  "config": {}
+}

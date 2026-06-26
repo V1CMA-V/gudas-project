@@ -1,3 +1,377 @@
-<footer>
-  <p>Footer.astro</p>
+---
+import { getSchoolInfo } from "@/lib/strapi";
+
+const year = new Date().getFullYear();
+const schoolInfo = await getSchoolInfo();
+
+const explore = [
+  { label: "Inicio", href: "/" },
+  { label: "Nosotros", href: "/about" },
+  { label: "Clases", href: "/classes" },
+  { label: "Galería", href: "/gallery" },
+  { label: "Contacto", href: "/contact" },
+];
+
+const disciplines = [
+  "Ballet Clásico",
+  "Danza Contemporánea",
+  "Jazz Dance",
+  "Danza Árabe",
+  "Danza Urbana",
+];
+
+// Datos reales del estudio (single type school-info en Strapi).
+const address = schoolInfo?.address ?? "";
+const email = schoolInfo?.email ?? "";
+const schedule = schoolInfo?.schedule ?? "";
+const phoneDigits = (schoolInfo?.phone ?? "").replace(/\D/g, "");
+const whatsappDigits = (schoolInfo?.whatsapp ?? "").replace(/\D/g, "");
+
+// Teléfono de 10 dígitos → "55 6090 8911"
+const phone =
+  phoneDigits.length === 10
+    ? `${phoneDigits.slice(0, 2)} ${phoneDigits.slice(2, 6)} ${phoneDigits.slice(6)}`
+    : schoolInfo?.phone ?? "";
+
+const ctaHref = whatsappDigits
+  ? `https://wa.me/${whatsappDigits}`
+  : email
+    ? `mailto:${email}`
+    : "/contact";
+
+// Redes — derivadas de los handles guardados en Strapi.
+const socials = [
+  schoolInfo?.instagram && {
+    label: "Instagram",
+    href: `https://instagram.com/${schoolInfo.instagram.replace(/^@/, "")}`,
+    handle: `@${schoolInfo.instagram.replace(/^@/, "")}`,
+  },
+  schoolInfo?.tiktok && {
+    label: "TikTok",
+    href: `https://tiktok.com/@${schoolInfo.tiktok.replace(/^@/, "")}`,
+    handle: `@${schoolInfo.tiktok.replace(/^@/, "")}`,
+  },
+  whatsappDigits && {
+    label: "WhatsApp",
+    href: `https://wa.me/${whatsappDigits}`,
+    handle: "Chatea",
+  },
+].filter(Boolean) as { label: string; href: string; handle: string }[];
+---
+
+<footer class="ft relative isolate overflow-hidden bg-ink text-paper">
+  <!-- atmosphere -->
+  <div
+    class="ft__grain pointer-events-none absolute inset-0 z-0 opacity-40 mix-blend-soft-light"
+    aria-hidden="true"
+  >
+  </div>
+  <div class="ft__glow pointer-events-none absolute inset-0 z-0" aria-hidden="true"></div>
+
+  <div
+    class="relative z-[2] mx-auto max-w-[1280px] px-[clamp(1.5rem,5vw,4.5rem)] pt-[clamp(4rem,9vh,7rem)] pb-[clamp(2rem,4vh,3rem)]"
+  >
+    <!-- top: invitation + nav columns -->
+    <div
+      class="grid grid-cols-[1.2fr_0.8fr] gap-[clamp(2.5rem,6vw,5rem)] max-[860px]:grid-cols-1"
+    >
+      <!-- invitation -->
+      <div>
+        <p
+          class="mb-5 inline-flex items-center gap-[0.7rem] text-[0.72rem] font-medium uppercase tracking-[0.28em] text-[oklch(0.82_0.03_70_/_0.8)]"
+        >
+          <span class="ft__dot h-[7px] w-[7px] rounded-full bg-ember-soft"></span>
+          Estudio de danza · Puebla, México
+        </p>
+        <h2
+          class="max-w-[18ch] text-[clamp(2.2rem,5vw,3.6rem)] leading-[0.98] tracking-[-0.02em] [font-family:Fraunces,serif]"
+        >
+          Tu próxima función <span class="ft__accent italic">empieza aquí</span>
+        </h2>
+        <div class="mt-[clamp(1.6rem,3vw,2.2rem)] flex flex-wrap gap-4">
+          <a
+            href={ctaHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="ft__cta group inline-flex items-center gap-[0.6rem] rounded-full px-[1.6rem] py-[0.95rem] text-[0.82rem] font-semibold uppercase tracking-[0.08em] no-underline transition duration-[350ms] [transition-timing-function:cubic-bezier(0.2,0.8,0.2,1)] hover:-translate-y-[3px]"
+          >
+            Reserva tu clase
+            <svg
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              class="h-[1.05em] w-[1.05em] fill-none stroke-current stroke-2 transition-transform duration-[350ms] [stroke-linecap:round] [stroke-linejoin:round] group-hover:translate-x-1"
+            >
+              <path d="M5 12h14M13 6l6 6-6 6"></path>
+            </svg>
+          </a>
+          <a
+            href={`mailto:${email}`}
+            class="ft__ghost inline-flex items-center rounded-full border border-[oklch(0.9_0.02_70_/_0.28)] bg-[oklch(0.9_0.02_70_/_0.04)] px-[1.6rem] py-[0.95rem] text-[0.82rem] font-semibold uppercase tracking-[0.08em] text-paper no-underline backdrop-blur-[6px] transition duration-[350ms] hover:-translate-y-[3px] hover:border-ember-soft hover:text-ember-soft"
+          >
+            Escríbenos
+          </a>
+        </div>
+      </div>
+
+      <!-- nav columns -->
+      <div class="grid grid-cols-2 gap-x-8 gap-y-10">
+        <nav aria-label="Explorar">
+          <h3 class="ft__col-title">Explora</h3>
+          <ul class="ft__list">
+            {
+              explore.map((item) => (
+                <li>
+                  <a href={item.href} class="ft__link">
+                    {item.label}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
+
+        <nav aria-label="Disciplinas">
+          <h3 class="ft__col-title">Clases</h3>
+          <ul class="ft__list">
+            {
+              disciplines.map((d) => (
+                <li>
+                  <a href="/classes" class="ft__link">
+                    {d}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
+      </div>
+    </div>
+
+    <!-- contact strip -->
+    <div
+      class="mt-[clamp(3rem,7vh,5rem)] grid grid-cols-3 gap-8 border-t border-[oklch(0.9_0.04_70_/_0.1)] pt-[clamp(2rem,4vh,3rem)] max-[640px]:grid-cols-1 max-[640px]:gap-6"
+    >
+      <div>
+        <span class="ft__label">Estudio</span>
+        <p class="ft__value">{address || "Puebla, México"}</p>
+      </div>
+      <div>
+        <span class="ft__label">Contacto</span>
+        <p class="ft__value">
+          {phone && (
+            <a href={`tel:+52${phoneDigits}`} class="ft__inline">{phone}</a>
+          )}
+          {phone && email && <br />}
+          {email && (
+            <a href={`mailto:${email}`} class="ft__inline">{email}</a>
+          )}
+        </p>
+      </div>
+      <div>
+        <span class="ft__label">Horario</span>
+        <p class="ft__value">{schedule || "Lunes a Sábado"}</p>
+      </div>
+    </div>
+
+    <!-- oversized wordmark -->
+    <div class="relative mt-[clamp(3rem,7vh,5rem)] mb-[clamp(1.5rem,3vh,2.5rem)]">
+      <p
+        class="ft__wordmark select-none leading-[0.8] [font-family:Fraunces,serif]"
+        aria-hidden="true"
+      >
+        GUDAS<span class="ft__wordmark-i italic">studio</span>
+      </p>
+    </div>
+
+    <!-- bottom bar -->
+    <div
+      class="flex flex-wrap items-center justify-between gap-x-8 gap-y-4 border-t border-[oklch(0.9_0.04_70_/_0.1)] pt-[clamp(1.5rem,3vh,2rem)]"
+    >
+      <p class="text-[0.78rem] text-[oklch(0.84_0.02_70_/_0.55)]">
+        © {year} GUDAS Studio · Escuela de Danza. Hecho con
+        <span class="text-ember">♥</span> en Puebla.
+      </p>
+
+      <ul class="flex flex-wrap items-center gap-x-6 gap-y-2">
+        {
+          socials.map((s) => (
+            <li>
+              <a
+                href={s.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="ft__social group inline-flex items-center gap-[0.4rem] text-[0.78rem] text-[oklch(0.84_0.02_70_/_0.7)] no-underline transition-colors hover:text-ember-soft"
+              >
+                {s.label}
+                <span class="text-[0.7rem] text-[oklch(0.7_0.02_70_/_0.4)] transition-colors group-hover:text-ember">
+                  {s.handle}
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+
+      <a href="#siteHeader" class="ft__top group inline-flex items-center gap-[0.5rem] text-[0.72rem] uppercase tracking-[0.18em] text-[oklch(0.84_0.02_70_/_0.55)] no-underline transition-colors hover:text-ember-soft">
+        Arriba
+        <svg viewBox="0 0 24 24" aria-hidden="true" class="h-[1.1em] w-[1.1em] fill-none stroke-current stroke-2 transition-transform duration-[350ms] [stroke-linecap:round] [stroke-linejoin:round] group-hover:-translate-y-[3px]">
+          <path d="M12 19V5M6 11l6-6 6 6"></path>
+        </svg>
+      </a>
+    </div>
+  </div>
 </footer>
+
+<style>
+  .ft {
+    background:
+      radial-gradient(70% 55% at 90% -10%, oklch(0.24 0.06 35) 0%, transparent 55%),
+      linear-gradient(180deg, var(--color-ink-deep) 0%, var(--color-ink) 100%);
+  }
+
+  .ft__grain {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .ft__glow {
+    background: radial-gradient(
+      50% 60% at 50% 120%,
+      oklch(0.55 0.19 32 / 0.28) 0%,
+      transparent 70%
+    );
+  }
+
+  .ft__dot {
+    box-shadow: 0 0 0 0 oklch(0.78 0.16 55 / 0.7);
+    animation: ft-pulse 2.4s ease-out infinite;
+  }
+
+  .ft__accent {
+    color: transparent;
+    background: linear-gradient(
+      100deg,
+      var(--color-ember-soft),
+      var(--color-ember) 65%,
+      oklch(0.6 0.22 25)
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    padding-right: 0.06em;
+  }
+
+  /* CTA — same gradient language as LinkButton */
+  .ft__cta {
+    background: linear-gradient(135deg, var(--color-ember-soft), var(--color-ember));
+    color: oklch(0.16 0.02 40);
+    box-shadow: 0 12px 34px -12px oklch(0.66 0.2 38 / 0.7);
+  }
+  .ft__cta:hover {
+    box-shadow: 0 20px 44px -14px oklch(0.66 0.2 38 / 0.85);
+  }
+
+  /* nav columns */
+  .ft__col-title {
+    margin-bottom: 1.1rem;
+    font-size: 0.68rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: oklch(0.8 0.03 70 / 0.55);
+  }
+  .ft__list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .ft__link {
+    position: relative;
+    width: fit-content;
+    font-size: 0.92rem;
+    color: oklch(0.88 0.02 70 / 0.78);
+    text-decoration: none;
+    transition: color 0.3s ease, padding-left 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .ft__link::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 0;
+    height: 1.5px;
+    background: var(--color-ember);
+    transform: translateY(-50%);
+    transition: width 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .ft__link:hover {
+    color: var(--color-ember-soft);
+    padding-left: 1.1rem;
+  }
+  .ft__link:hover::before {
+    width: 0.8rem;
+  }
+
+  /* contact strip */
+  .ft__label {
+    display: block;
+    margin-bottom: 0.6rem;
+    font-size: 0.66rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: oklch(0.8 0.03 70 / 0.5);
+  }
+  .ft__value {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: oklch(0.86 0.02 70 / 0.78);
+  }
+  .ft__inline {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+  .ft__inline:hover {
+    color: var(--color-ember-soft);
+  }
+
+  /* oversized closing wordmark */
+  .ft__wordmark {
+    font-size: clamp(4rem, 19vw, 17rem);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    color: transparent;
+    background: linear-gradient(
+      180deg,
+      oklch(0.9 0.05 70 / 0.14) 0%,
+      oklch(0.9 0.05 70 / 0.02) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+  .ft__wordmark-i {
+    font-weight: 400;
+    font-size: 0.4em;
+    color: transparent;
+    background: linear-gradient(100deg, var(--color-ember-soft), var(--color-ember));
+    -webkit-background-clip: text;
+    background-clip: text;
+    padding-left: 0.15em;
+  }
+
+  @keyframes ft-pulse {
+    0% { box-shadow: 0 0 0 0 oklch(0.78 0.16 55 / 0.7); }
+    70% { box-shadow: 0 0 0 10px oklch(0.78 0.16 55 / 0); }
+    100% { box-shadow: 0 0 0 0 oklch(0.78 0.16 55 / 0); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ft__dot { animation: none; }
+    .ft__link,
+    .ft__cta,
+    .ft__social,
+    .ft__top svg { transition: none; }
+  }
+</style>
